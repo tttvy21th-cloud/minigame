@@ -6,7 +6,7 @@
 <style>
     body {
         font-family: Arial, sans-serif;
-        background-color: #0b1a2e;
+        background: linear-gradient(135deg, #0b1a2e, #1a3a5f);
         color: white;
         display: flex;
         flex-direction: column;
@@ -15,23 +15,31 @@
         height: 100vh;
         margin: 0;
     }
+    .quiz-box {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0, 224, 255, 0.4);
+        text-align: center;
+        width: 80%;
+        max-width: 500px;
+        animation: fadeIn 0.4s ease-in-out;
+    }
     h2 {
         color: #00e0ff;
         font-size: 28px;
         margin-bottom: 20px;
-        animation: fadeIn 0.5s ease-in-out;
     }
     .question {
         font-size: 20px;
         margin-bottom: 20px;
-        animation: fadeIn 0.5s ease-in-out;
     }
     button {
         padding: 12px 20px;
-        margin: 10px;
+        margin: 8px;
         font-size: 16px;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
         background-color: #00e0ff;
         color: #0b1a2e;
@@ -42,11 +50,12 @@
         transform: scale(1.05);
     }
     .score {
-        position: absolute;
-        top: 20px;
-        right: 20px;
+        margin-top: 15px;
         font-size: 18px;
         color: #ffd700;
+    }
+    .nav-buttons {
+        margin-top: 15px;
     }
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-10px); }
@@ -56,61 +65,88 @@
 </head>
 <body>
 
-<div class="score">Điểm: <span id="score">0</span></div>
-<h2>Mini Quiz</h2>
-<div class="question" id="question">Đang tải câu hỏi...</div>
-<div id="answers"></div>
+<div class="quiz-box">
+    <h2>Mini Quiz</h2>
+    <div class="question" id="question">Đang tải câu hỏi...</div>
+    <div id="answers"></div>
+    <div class="nav-buttons">
+        <button onclick="prevQuestion()">⬅ Quay lại</button>
+        <button onclick="nextQuestion()">Tiếp ➡</button>
+    </div>
+    <div class="score">Điểm: <span id="score">0</span></div>
+</div>
 
 <script>
 const questions = [
-    {
-        q: "Hành tinh nào gần Mặt Trời nhất?",
-        answers: ["Sao Thủy", "Sao Hỏa", "Trái Đất"],
-        correct: 0
-    },
-    {
-        q: "Ai là tác giả của 'Truyện Kiều'?",
-        answers: ["Nguyễn Du", "Nguyễn Trãi", "Hồ Xuân Hương"],
-        correct: 0
-    },
-    {
-        q: "Thủ đô của Nhật Bản là gì?",
-        answers: ["Kyoto", "Tokyo", "Osaka"],
-        correct: 1
-    }
+    { q: "Hành tinh nào gần Mặt Trời nhất?", answers: ["Sao Thủy", "Sao Hỏa", "Trái Đất"], correct: 0 },
+    { q: "Ai là tác giả của 'Truyện Kiều'?", answers: ["Nguyễn Du", "Nguyễn Trãi", "Hồ Xuân Hương"], correct: 0 },
+    { q: "Thủ đô của Nhật Bản là gì?", answers: ["Kyoto", "Tokyo", "Osaka"], correct: 1 },
+    { q: "Loài vật nào được mệnh danh là 'Chúa sơn lâm'?", answers: ["Hổ", "Sư tử", "Báo"], correct: 0 },
+    { q: "Ngôn ngữ chính thức của Việt Nam là gì?", answers: ["Tiếng Việt", "Tiếng Anh", "Tiếng Pháp"], correct: 0 },
+    { q: "Biển lớn nhất thế giới là gì?", answers: ["Thái Bình Dương", "Đại Tây Dương", "Ấn Độ Dương"], correct: 0 }
 ];
 
 let currentQuestion = 0;
 let score = 0;
+let answered = Array(questions.length).fill(null);
 
 function loadQuestion() {
     const q = questions[currentQuestion];
-    document.getElementById("question").textContent = q.q;
+    document.getElementById("question").textContent = `${currentQuestion+1}. ${q.q}`;
     const answersDiv = document.getElementById("answers");
     answersDiv.innerHTML = "";
     q.answers.forEach((ans, index) => {
         const btn = document.createElement("button");
         btn.textContent = ans;
         btn.onclick = () => checkAnswer(index);
+        if (answered[currentQuestion] === index) {
+            btn.style.backgroundColor = (index === q.correct) ? "#4CAF50" : "#ff4c4c";
+            btn.style.color = "white";
+        }
         answersDiv.appendChild(btn);
     });
+    document.getElementById("score").textContent = score;
 }
 
 function checkAnswer(selected) {
-    if (selected === questions[currentQuestion].correct) {
-        alert("Chính xác! 🎉");
-        score++;
-        document.getElementById("score").textContent = score;
-    } else {
-        alert("Sai rồi 😢");
+    if (answered[currentQuestion] === null) {
+        answered[currentQuestion] = selected;
+        if (selected === questions[currentQuestion].correct) {
+            score++;
+        }
     }
-    currentQuestion++;
-    if (currentQuestion < questions.length) {
+    loadQuestion();
+}
+
+function nextQuestion() {
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
         loadQuestion();
     } else {
-        document.getElementById("question").textContent = "Hoàn thành quiz!";
-        document.getElementById("answers").innerHTML = `<p>Bạn đạt ${score}/${questions.length} điểm</p>`;
+        showResult();
     }
+}
+
+function prevQuestion() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+    }
+}
+
+function showResult() {
+    document.querySelector(".quiz-box").innerHTML = `
+        <h2>Kết quả</h2>
+        <p>Bạn đạt <strong>${score}</strong> / ${questions.length} điểm 🎉</p>
+        <button onclick="restartQuiz()">Chơi lại</button>
+    `;
+}
+
+function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    answered.fill(null);
+    loadQuestion();
 }
 
 loadQuestion();
