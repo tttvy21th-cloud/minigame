@@ -69,10 +69,6 @@
     <h2>Mini Quiz</h2>
     <div class="question" id="question">Đang tải câu hỏi...</div>
     <div id="answers"></div>
-    <div class="nav-buttons">
-        <button onclick="prevQuestion()">⬅ Quay lại</button>
-        <button onclick="nextQuestion()">Tiếp ➡</button>
-    </div>
     <div class="score">Điểm: <span id="score">0</span></div>
 </div>
 
@@ -119,40 +115,39 @@ function loadQuestion() {
     q.answers.forEach((ans, index) => {
         const btn = document.createElement("button");
         btn.textContent = ans;
-        btn.onclick = () => checkAnswer(index);
-        if (answered[currentQuestion] === index) {
-            btn.style.backgroundColor = (index === q.correct) ? "#4CAF50" : "#ff4c4c";
-            btn.style.color = "white";
-        }
+        btn.onclick = () => checkAnswer(index, btn);
         answersDiv.appendChild(btn);
     });
     document.getElementById("score").textContent = score;
 }
 
-function checkAnswer(selected) {
-    if (answered[currentQuestion] === null) {
-        answered[currentQuestion] = selected;
-        if (selected === questions[currentQuestion].correct) {
-            score++;
+function checkAnswer(selected, btn) {
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll("#answers button");
+
+    buttons.forEach((b, i) => {
+        if (i === q.correct) {
+            b.style.backgroundColor = "#4CAF50"; // xanh cho đúng
+            b.style.color = "white";
+        } else if (i === selected) {
+            b.style.backgroundColor = "#ff4c4c"; // đỏ cho sai
+            b.style.color = "white";
         }
-    }
-    loadQuestion();
-}
+        b.disabled = true;
+    });
 
-function nextQuestion() {
-    if (currentQuestion < questions.length - 1) {
-        currentQuestion++;
-        loadQuestion();
-    } else {
-        showResult();
+    if (selected === q.correct) {
+        score++;
     }
-}
 
-function prevQuestion() {
-    if (currentQuestion > 0) {
-        currentQuestion--;
-        loadQuestion();
-    }
+    setTimeout(() => {
+        if (currentQuestion < questions.length - 1) {
+            currentQuestion++;
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }, 800);
 }
 
 function showResult() {
@@ -164,11 +159,7 @@ function showResult() {
 }
 
 function restartQuiz() {
-    questions = getRandomQuestions();
-    currentQuestion = 0;
-    score = 0;
-    answered = Array(questions.length).fill(null);
-    loadQuestion();
+    location.reload(); // load lại trang để random câu hỏi mới
 }
 
 // Khởi tạo lần đầu
