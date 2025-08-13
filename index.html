@@ -1,172 +1,408 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Mini Quiz</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #0b1a2e, #1a3a5f);
-        color: white;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-    .quiz-box {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 0 15px rgba(0, 224, 255, 0.4);
-        text-align: center;
-        width: 80%;
-        max-width: 500px;
-        animation: fadeIn 0.4s ease-in-out;
-    }
-    h2 {
-        color: #00e0ff;
-        font-size: 28px;
-        margin-bottom: 20px;
-    }
-    .question {
-        font-size: 20px;
-        margin-bottom: 20px;
-    }
-    button {
-        padding: 12px 20px;
-        margin: 8px;
-        font-size: 16px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        background-color: #00e0ff;
-        color: #0b1a2e;
-        transition: 0.3s;
-    }
-    button:hover {
-        background-color: #00a6c4;
-        transform: scale(1.05);
-    }
-    .score {
-        margin-top: 15px;
-        font-size: 18px;
-        color: #ffd700;
-    }
-    .nav-buttons {
-        margin-top: 15px;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minigame Quiz Trắc Nghiệm</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1e1e, #333333);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            animation: gradientAnimation 15s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjMjAyMDIwIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiM0MDQwNDAiPjwvcmVjdD4KPC9zdmc+');
+            opacity: 0.1;
+            animation: noise 0.5s steps(4) infinite;
+        }
+
+        @keyframes noise {
+            0% { transform: translate(0, 0); }
+            10% { transform: translate(-5px, -5px); }
+            20% { transform: translate(5px, 5px); }
+            30% { transform: translate(-10px, 10px); }
+            40% { transform: translate(10px, -10px); }
+            50% { transform: translate(-15px, 15px); }
+            60% { transform: translate(15px, -15px); }
+            70% { transform: translate(-20px, 20px); }
+            80% { transform: translate(20px, -20px); }
+            90% { transform: translate(-25px, 25px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .quiz-container {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out, pulse 2s infinite;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
+            50% { box-shadow: 0 4px 30px rgba(0, 255, 255, 0.3); }
+            100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
+        }
+
+        .question {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            animation: slideInLeft 0.5s ease-in-out;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .answer-btn {
+            background: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.6s;
+        }
+
+        .answer-btn:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .answer-btn:hover {
+            background: #3399ff;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px #3399ff;
+        }
+
+        .correct {
+            background: #28a745 !important;
+            animation: bounce 0.5s;
+        }
+
+        .wrong {
+            background: #dc3545 !important;
+            animation: shake 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .score {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .progress-bar {
+            margin-top: 10px;
+            background: #444;
+            border-radius: 5px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            background: #007bff;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .result {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .result h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: zoomIn 0.5s;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .restart-btn {
+            background: #ffc107;
+            color: #000000;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .restart-btn:hover {
+            background: #ffdb4d;
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 15px;
+            }
+
+            .question {
+                font-size: 1.2em;
+            }
+
+            .answer-btn {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+
+            .score {
+                font-size: 1em;
+            }
+
+            .result h2 {
+                font-size: 1.5em;
+            }
+
+            .restart-btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="quiz-container" id="quiz">
+        <div class="question" id="question"></div>
+        <div class="answers" id="answers"></div>
+        <div class="progress-bar"><div class="progress" id="progress"></div></div>
+        <div class="score" id="score">Điểm: 0/0</div>
+    </div>
+    <div class="quiz-container result" id="result">
+        <h2 id="result-text"></h2>
+        <button class="restart-btn" onclick="location.reload()">Chơi lại</button>
+    </div>
 
-<div class="quiz-box">
-    <h2>Mini Quiz</h2>
-    <div class="question" id="question">Đang tải câu hỏi...</div>
-    <div id="answers"></div>
-    <div class="score">Điểm: <span id="score">0</span></div>
-</div>
-
-<script>
-const questionBank = [
-    { q: "Hành tinh nào gần Mặt Trời nhất?", answers: ["Sao Thủy", "Sao Hỏa", "Trái Đất"], correct: 0 },
-    { q: "Ai là tác giả của 'Truyện Kiều'?", answers: ["Nguyễn Du", "Nguyễn Trãi", "Hồ Xuân Hương"], correct: 0 },
-    { q: "Thủ đô của Nhật Bản là gì?", answers: ["Kyoto", "Tokyo", "Osaka"], correct: 1 },
-    { q: "Loài vật nào được mệnh danh là 'Chúa sơn lâm'?", answers: ["Hổ", "Sư tử", "Báo"], correct: 0 },
-    { q: "Ngôn ngữ chính thức của Việt Nam là gì?", answers: ["Tiếng Việt", "Tiếng Anh", "Tiếng Pháp"], correct: 0 },
-    { q: "Biển lớn nhất thế giới là gì?", answers: ["Thái Bình Dương", "Đại Tây Dương", "Ấn Độ Dương"], correct: 0 },
-    { q: "Ai là người phát minh ra bóng đèn điện?", answers: ["Edison", "Newton", "Einstein"], correct: 0 },
-    { q: "Sông nào dài nhất Việt Nam?", answers: ["Sông Hồng", "Sông Mekong", "Sông Đà"], correct: 1 },
-    { q: "Loài chim nào có thể bay lùi?", answers: ["Chim ruồi", "Chim sẻ", "Chim bồ câu"], correct: 0 },
-    { q: "Hành tinh nào có nhiều vệ tinh nhất?", answers: ["Sao Mộc", "Sao Thổ", "Sao Thiên Vương"], correct: 0 },
-    { q: "Kim loại nào nhẹ nhất?", answers: ["Nhôm", "Liti", "Magie"], correct: 1 },
-    { q: "Quốc gia nào có diện tích lớn nhất thế giới?", answers: ["Nga", "Mỹ", "Canada"], correct: 0 },
-    { q: "Môn thể thao vua là môn gì?", answers: ["Bóng rổ", "Bóng đá", "Cầu lông"], correct: 1 },
-    { q: "Thủ đô của Hàn Quốc là gì?", answers: ["Seoul", "Busan", "Incheon"], correct: 0 },
-    { q: "Động vật nào ngủ ít nhất?", answers: ["Hươu cao cổ", "Mèo", "Ngựa"], correct: 0 }
-];
-
-let currentQuestion = 0;
-let score = 0;
-let answered = [];
-let questions = [];
-
-function getRandomQuestions() {
-    let copy = [...questionBank];
-    let selected = [];
-    for (let i = 0; i < 5; i++) {
-        let index = Math.floor(Math.random() * copy.length);
-        selected.push(copy[index]);
-        copy.splice(index, 1);
-    }
-    return selected;
-}
-
-function loadQuestion() {
-    const q = questions[currentQuestion];
-    document.getElementById("question").textContent = `${currentQuestion+1}. ${q.q}`;
-    const answersDiv = document.getElementById("answers");
-    answersDiv.innerHTML = "";
-    q.answers.forEach((ans, index) => {
-        const btn = document.createElement("button");
-        btn.textContent = ans;
-        btn.onclick = () => checkAnswer(index, btn);
-        answersDiv.appendChild(btn);
-    });
-    document.getElementById("score").textContent = score;
-}
-
-function checkAnswer(selected, btn) {
-    const q = questions[currentQuestion];
-    const buttons = document.querySelectorAll("#answers button");
-
-    buttons.forEach((b, i) => {
-        if (i === q.correct) {
-            b.style.backgroundColor = "#4CAF50"; // xanh cho đúng
-            b.style.color = "white";
-        } else if (i === selected) {
-            b.style.backgroundColor = "#ff4c4c"; // đỏ cho sai
-            b.style.color = "white";
+    <!-- Âm thanh đơn giản dùng JS, không cần file -->
+    <script>
+        function playSound(isCorrect) {
+            const audio = new Audio();
+            audio.src = 'data:audio/wav;base64,' + (isCorrect ? 'UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=' : 'UklGRjIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA='); // Simple beep sounds
+            audio.play();
         }
-        b.disabled = true;
-    });
+    </script>
 
-    if (selected === q.correct) {
-        score++;
-    }
+    <script>
+        const questions = [
+            { q: "Thủ đô của Việt Nam là gì?", answers: ["Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng"], correct: 0 },
+            { q: "2 + 2 bằng bao nhiêu?", answers: ["3", "4", "5"], correct: 1 },
+            { q: "Màu của bầu trời là gì?", answers: ["Xanh", "Đỏ", "Vàng"], correct: 0 },
+            { q: "Nước sôi ở nhiệt độ bao nhiêu độ C?", answers: ["90", "100", "110"], correct: 1 },
+            { q: "Quốc gia nào lớn nhất thế giới?", answers: ["Nga", "Mỹ", "Trung Quốc"], correct: 0 },
+            { q: "Ai là tổng thống đầu tiên của Mỹ?", answers: ["Lincoln", "Washington", "Obama"], correct: 1 },
+            { q: "Hành tinh nào gần Mặt Trời nhất?", answers: ["Sao Thủy", "Sao Hỏa", "Trái Đất"], correct: 0 },
+            { q: "Ngôn ngữ lập trình phổ biến nhất?", answers: ["Java", "Python", "C++"], correct: 1 },
+            { q: "Sông dài nhất thế giới?", answers: ["Amazon", "Nile", "Yangtze"], correct: 1 },
+            { q: "Ai viết 'Romeo và Juliet'?", answers: ["Shakespeare", "Dickens", "Tolstoy"], correct: 0 },
+            { q: "Năm Columbus khám phá Mỹ?", answers: ["1492", "1600", "1776"], correct: 0 },
+            { q: "Công thức nước là gì?", answers: ["H2O", "CO2", "NaCl"], correct: 0 },
+            { q: "Đơn vị đo điện trở?", answers: ["Ohm", "Volt", "Ampere"], correct: 0 },
+            { q: "Quốc hoa Việt Nam là gì?", answers: ["Hoa Sen", "Hoa Hồng", "Hoa Cúc"], correct: 0 },
+            { q: "Ai phát minh bóng đèn?", answers: ["Edison", "Tesla", "Newton"], correct: 0 }
+        ];
 
-    setTimeout(() => {
-        if (currentQuestion < questions.length - 1) {
-            currentQuestion++;
-            loadQuestion();
-        } else {
-            showResult();
+        let selectedQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const totalQuestions = 5;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
-    }, 800);
-}
 
-function showResult() {
-    document.querySelector(".quiz-box").innerHTML = `
-        <h2>Kết quả</h2>
-        <p>Bạn đạt <strong>${score}</strong> / ${questions.length} điểm 🎉</p>
-        <button onclick="restartQuiz()">Chơi lại</button>
-    `;
-}
+        function startQuiz() {
+            selectedQuestions = shuffle([...questions]).slice(0, totalQuestions);
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('quiz').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            showQuestion();
+        }
 
-function restartQuiz() {
-    location.reload(); // load lại trang để random câu hỏi mới
-}
+        function showQuestion() {
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.classList.remove('fadeIn');
+            void quizContainer.offsetWidth;
+            quizContainer.classList.add('fadeIn');
 
-// Khởi tạo lần đầu
-questions = getRandomQuestions();
-answered = Array(questions.length).fill(null);
-loadQuestion();
-</script>
+            const q = selectedQuestions[currentQuestionIndex];
+            document.getElementById('question').innerText = `${q.q} (Câu ${currentQuestionIndex + 1}/${totalQuestions})`;
+            const answersDiv = document.getElementById('answers');
+            answersDiv.innerHTML = '';
+            q.answers.forEach((ans, index) => {
+                const btn = document.createElement('button');
+                btn.classList.add('answer-btn');
+                btn.innerText = ans;
+                btn.onclick = () => selectAnswer(index);
+                answersDiv.appendChild(btn);
+            });
+            updateScore();
+            updateProgress();
+        }
 
+        function selectAnswer(selectedIndex) {
+            const q = selectedQuestions[currentQuestionIndex];
+            const buttons = document.querySelectorAll('.answer-btn');
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === q.correct) {
+                    btn.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            const isCorrect = selectedIndex === q.correct;
+            if (isCorrect) {
+                score++;
+                // playSound(true); // Uncomment nếu muốn âm thanh
+            } else {
+                // playSound(false); // Uncomment nếu muốn âm thanh
+            }
+            updateScore();
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < totalQuestions) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }, 800);
+        }
+
+        function updateScore() {
+            document.getElementById('score').innerText = `Điểm: ${score}/${currentQuestionIndex + 1}`;
+        }
+
+        function updateProgress() {
+            const progress = document.getElementById('progress');
+            const width = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            progress.style.width = `${width}%`;
+        }
+
+        function showResult() {
+            document.getElementById('quiz').style.display = 'none';
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            document.getElementById('result-text').innerText = `Bạn đạt ${score}/${totalQuestions} điểm`;
+            if (score === totalQuestions) {
+                confetti();
+            }
+        }
+
+        function confetti() {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            document.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            const pieces = [];
+            for (let i = 0; i < 200; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 10 + 5,
+                    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                    vx: Math.random() * 10 - 5,
+                    vy: Math.random() * 5 + 5
+                });
+            }
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.1;
+                    if (p.y > canvas.height) p.y = -p.r;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+            setTimeout(() => canvas.remove(), 5000);
+        }
+
+        startQuiz();
+    </script>
 </body>
 </html>
