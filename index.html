@@ -8,11 +8,23 @@
         font-family: Arial, sans-serif;
         background-color: #0b1a2e;
         color: white;
-        text-align: center;
-        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
     }
     h2 {
         color: #00e0ff;
+        font-size: 28px;
+        margin-bottom: 20px;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    .question {
+        font-size: 20px;
+        margin-bottom: 20px;
+        animation: fadeIn 0.5s ease-in-out;
     }
     button {
         padding: 12px 20px;
@@ -27,17 +39,82 @@
     }
     button:hover {
         background-color: #00a6c4;
+        transform: scale(1.05);
+    }
+    .score {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 18px;
+        color: #ffd700;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 </head>
 <body>
 
-<h2>Câu hỏi</h2>
-<p>Hành tinh nào gần Mặt Trời nhất?</p>
+<div class="score">Điểm: <span id="score">0</span></div>
+<h2>Mini Quiz</h2>
+<div class="question" id="question">Đang tải câu hỏi...</div>
+<div id="answers"></div>
 
-<button onclick="alert('Chính xác! 🎉')">Sao Thủy</button>
-<button onclick="alert('Sai rồi 😢')">Sao Hỏa</button>
-<button onclick="alert('Sai rồi 😢')">Trái Đất</button>
+<script>
+const questions = [
+    {
+        q: "Hành tinh nào gần Mặt Trời nhất?",
+        answers: ["Sao Thủy", "Sao Hỏa", "Trái Đất"],
+        correct: 0
+    },
+    {
+        q: "Ai là tác giả của 'Truyện Kiều'?",
+        answers: ["Nguyễn Du", "Nguyễn Trãi", "Hồ Xuân Hương"],
+        correct: 0
+    },
+    {
+        q: "Thủ đô của Nhật Bản là gì?",
+        answers: ["Kyoto", "Tokyo", "Osaka"],
+        correct: 1
+    }
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+function loadQuestion() {
+    const q = questions[currentQuestion];
+    document.getElementById("question").textContent = q.q;
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = "";
+    q.answers.forEach((ans, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = ans;
+        btn.onclick = () => checkAnswer(index);
+        answersDiv.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected) {
+    if (selected === questions[currentQuestion].correct) {
+        alert("Chính xác! 🎉");
+        score++;
+        document.getElementById("score").textContent = score;
+    } else {
+        alert("Sai rồi 😢");
+    }
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+        loadQuestion();
+    } else {
+        document.getElementById("question").textContent = "Hoàn thành quiz!";
+        document.getElementById("answers").innerHTML = `<p>Bạn đạt ${score}/${questions.length} điểm</p>`;
+    }
+}
+
+loadQuestion();
+</script>
 
 </body>
 </html>
