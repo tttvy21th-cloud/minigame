@@ -3,38 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minigame Quiz Trắc Nghiệm với Không Gian 360</title>
-    <script src="https://photo-sphere-viewer.js.org/dist/photo-sphere-viewer.min.js"></script>
+    <title>Minigame Quiz Trắc Nghiệm</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1e1e, #333333);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             overflow: hidden;
-            background: #000;
+            animation: gradientAnimation 15s ease infinite;
         }
 
-        #panorama {
-            position: fixed;
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjMjAyMDIwIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiM0MDQwNDAiPjwvcmVjdD4KPC9zdmc+');
+            opacity: 0.1;
+            animation: noise 0.5s steps(4) infinite;
+        }
+
+        @keyframes noise {
+            0% { transform: translate(0, 0); }
+            10% { transform: translate(-5px, -5px); }
+            20% { transform: translate(5px, 5px); }
+            30% { transform: translate(-10px, 10px); }
+            40% { transform: translate(10px, -10px); }
+            50% { transform: translate(-15px, 15px); }
+            60% { transform: translate(15px, -15px); }
+            70% { transform: translate(-20px, 20px); }
+            80% { transform: translate(20px, -20px); }
+            90% { transform: translate(-25px, 25px); }
+            100% { transform: translate(0, 0); }
         }
 
         .quiz-container {
-            position: relative;
-            z-index: 2;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             max-width: 600px;
             width: 90%;
-            margin: 20px auto;
             text-align: center;
             animation: fadeIn 0.5s ease-in-out, pulse 2s infinite;
+            position: relative;
         }
 
         @keyframes fadeIn {
@@ -43,14 +69,13 @@
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3); }
-            50% { box-shadow: 0 4px 30px rgba(0, 255, 255, 0.5); }
-            100% { box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3); }
+            0% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
+            50% { box-shadow: 0 4px 30px rgba(0, 255, 255, 0.3); }
+            100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
         }
 
         .question {
             font-size: 1.5em;
-            color: #fff;
             margin-bottom: 20px;
             animation: slideInLeft 0.5s ease-in-out;
         }
@@ -127,7 +152,6 @@
         .score {
             margin-top: 20px;
             font-size: 1.2em;
-            color: #fff;
         }
 
         .progress-bar {
@@ -180,7 +204,6 @@
         @media (max-width: 600px) {
             .quiz-container {
                 padding: 15px;
-                margin: 10px;
             }
 
             .question {
@@ -208,7 +231,6 @@
     </style>
 </head>
 <body>
-    <div id="panorama"></div>
     <div class="quiz-container" id="quiz">
         <div class="question" id="question"></div>
         <div class="answers" id="answers"></div>
@@ -220,31 +242,16 @@
         <button class="restart-btn" onclick="location.reload()">Chơi lại</button>
     </div>
 
-    <!-- Âm thanh đơn giản -->
+    <!-- Âm thanh đơn giản dùng JS, không cần file -->
     <script>
         function playSound(isCorrect) {
             const audio = new Audio();
-            audio.src = 'data:audio/wav;base64,' + (isCorrect ? 'UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=' : 'UklGRjIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+            audio.src = 'data:audio/wav;base64,' + (isCorrect ? 'UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=' : 'UklGRjIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA='); // Simple beep sounds
             audio.play();
         }
     </script>
 
     <script>
-        // Khởi tạo Photo Sphere Viewer
-        const viewer = new PhotoSphereViewer.Viewer({
-            container: document.querySelector('#panorama'),
-            panorama: 'https://photo-sphere-viewer-data.s3.amazonaws.com/example.jpg', // URL ảnh panorama mẫu
-            navbar: false,
-            mousewheel: true,
-            touchmove_two_fingers: true,
-            default_fov: 90,
-            default_lat: 0,
-            autorotate: {
-                enabled: true,
-                speed: '0.5rpm'
-            }
-        });
-
         const questions = [
             { q: "Thủ đô của Việt Nam là gì?", answers: ["Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng"], correct: 0 },
             { q: "2 + 2 bằng bao nhiêu?", answers: ["3", "4", "5"], correct: 1 },
@@ -321,10 +328,9 @@
             const isCorrect = selectedIndex === q.correct;
             if (isCorrect) {
                 score++;
-                playSound(true);
-                if (score === currentQuestionIndex + 1) confetti();
+                // playSound(true); // Uncomment nếu muốn âm thanh
             } else {
-                playSound(false);
+                // playSound(false); // Uncomment nếu muốn âm thanh
             }
             updateScore();
 
@@ -353,7 +359,9 @@
             const resultDiv = document.getElementById('result');
             resultDiv.style.display = 'block';
             document.getElementById('result-text').innerText = `Bạn đạt ${score}/${totalQuestions} điểm`;
-            if (score === totalQuestions) confetti();
+            if (score === totalQuestions) {
+                confetti();
+            }
         }
 
         function confetti() {
@@ -363,7 +371,6 @@
             canvas.style.left = '0';
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            canvas.style.zIndex = '3';
             document.body.appendChild(canvas);
             const ctx = canvas.getContext('2d');
             const pieces = [];
