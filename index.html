@@ -77,18 +77,39 @@
 </div>
 
 <script>
-const questions = [
+const questionBank = [
     { q: "Hành tinh nào gần Mặt Trời nhất?", answers: ["Sao Thủy", "Sao Hỏa", "Trái Đất"], correct: 0 },
     { q: "Ai là tác giả của 'Truyện Kiều'?", answers: ["Nguyễn Du", "Nguyễn Trãi", "Hồ Xuân Hương"], correct: 0 },
     { q: "Thủ đô của Nhật Bản là gì?", answers: ["Kyoto", "Tokyo", "Osaka"], correct: 1 },
     { q: "Loài vật nào được mệnh danh là 'Chúa sơn lâm'?", answers: ["Hổ", "Sư tử", "Báo"], correct: 0 },
     { q: "Ngôn ngữ chính thức của Việt Nam là gì?", answers: ["Tiếng Việt", "Tiếng Anh", "Tiếng Pháp"], correct: 0 },
-    { q: "Biển lớn nhất thế giới là gì?", answers: ["Thái Bình Dương", "Đại Tây Dương", "Ấn Độ Dương"], correct: 0 }
+    { q: "Biển lớn nhất thế giới là gì?", answers: ["Thái Bình Dương", "Đại Tây Dương", "Ấn Độ Dương"], correct: 0 },
+    { q: "Ai là người phát minh ra bóng đèn điện?", answers: ["Edison", "Newton", "Einstein"], correct: 0 },
+    { q: "Sông nào dài nhất Việt Nam?", answers: ["Sông Hồng", "Sông Mekong", "Sông Đà"], correct: 1 },
+    { q: "Loài chim nào có thể bay lùi?", answers: ["Chim ruồi", "Chim sẻ", "Chim bồ câu"], correct: 0 },
+    { q: "Hành tinh nào có nhiều vệ tinh nhất?", answers: ["Sao Mộc", "Sao Thổ", "Sao Thiên Vương"], correct: 0 },
+    { q: "Kim loại nào nhẹ nhất?", answers: ["Nhôm", "Liti", "Magie"], correct: 1 },
+    { q: "Quốc gia nào có diện tích lớn nhất thế giới?", answers: ["Nga", "Mỹ", "Canada"], correct: 0 },
+    { q: "Môn thể thao vua là môn gì?", answers: ["Bóng rổ", "Bóng đá", "Cầu lông"], correct: 1 },
+    { q: "Thủ đô của Hàn Quốc là gì?", answers: ["Seoul", "Busan", "Incheon"], correct: 0 },
+    { q: "Động vật nào ngủ ít nhất?", answers: ["Hươu cao cổ", "Mèo", "Ngựa"], correct: 0 }
 ];
 
 let currentQuestion = 0;
 let score = 0;
-let answered = Array(questions.length).fill(null);
+let answered = [];
+let questions = [];
+
+function getRandomQuestions() {
+    let copy = [...questionBank];
+    let selected = [];
+    for (let i = 0; i < 5; i++) {
+        let index = Math.floor(Math.random() * copy.length);
+        selected.push(copy[index]);
+        copy.splice(index, 1);
+    }
+    return selected;
+}
 
 function loadQuestion() {
     const q = questions[currentQuestion];
@@ -143,12 +164,16 @@ function showResult() {
 }
 
 function restartQuiz() {
+    questions = getRandomQuestions();
     currentQuestion = 0;
     score = 0;
-    answered.fill(null);
+    answered = Array(questions.length).fill(null);
     loadQuestion();
 }
 
+// Khởi tạo lần đầu
+questions = getRandomQuestions();
+answered = Array(questions.length).fill(null);
 loadQuestion();
 </script>
 
